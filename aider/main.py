@@ -17,12 +17,20 @@ from aider.io import InputOutput
 from aider.llm import litellm  # noqa: F401; properly init litellm on launch
 from aider.repo import GitRepo
 from aider.versioncheck import check_version
+from aider.sft import train_sft
 
 from .dump import dump  # noqa: F401
 
 
 def get_git_root():
     """Try and guess the git repo, since the conf.yml can be at the repo root"""
+
+def run_training():
+    try:
+        train_sft("gpt2", "wikitext", "./sft_output")
+        print("Training completed successfully.")
+    except Exception as e:
+        print(f"An error occurred during training: {str(e)}")
     try:
         repo = git.Repo(search_parent_directories=True)
         return repo.working_tree_dir
@@ -299,6 +307,10 @@ def register_litellm_models(git_root, model_metadata_fname, io):
 def main(argv=None, input=None, output=None, force_git_root=None, return_coder=False):
     if argv is None:
         argv = sys.argv[1:]
+
+    if argv and argv[0] == "train":
+        run_training()
+        return 0
 
     if force_git_root:
         git_root = force_git_root

@@ -79,6 +79,17 @@ class Commands:
 
         return content
 
+    def cmd_sft(self, args):
+        """Run Supervised Fine-Tuning"""
+        args_list = args.split()
+        if len(args_list) < 3:
+            self.io.tool_error("Usage: /sft <model_name> <dataset_name> <output_dir>")
+            return
+
+        model_name, dataset_name, output_dir = args_list[:3]
+        train_sft(model_name, dataset_name, output_dir)
+        self.io.tool_output(f"SFT completed. Model saved in {output_dir}")
+
     def is_command(self, inp):
         return inp[0] in "/!"
 

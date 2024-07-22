@@ -125,9 +125,15 @@ class Scraper:
 
             page = browser.new_page(user_agent=user_agent)
             try:
+                # Validate URL
+                if not url.startswith(('http://', 'https://')):
+                    url = 'https://' + url
                 page.goto(url, wait_until="networkidle", timeout=5000)
             except playwright._impl._errors.TimeoutError:
                 pass
+            except playwright._impl._errors.Error as e:
+                self.print_error(f"Error scraping {url}: {str(e)}")
+                return ""
             content = page.content()
             browser.close()
 
